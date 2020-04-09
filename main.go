@@ -4,52 +4,62 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"log"
 	"strings"
+	"time"
 )
 
-type wifiBody struct {
-	isFormat bool   // 格式是否对
-	Type     string // 加密类型
-	SID      string // 名称
-	PWD      string // 密码
-}
-
-func decodeWifi(code string) wifiBody {
-	var Body wifiBody
-	var x1 = "WIFI:"
-	var x2 = ";;"
-	var isFormat = strings.Index(code, x1) == 0 && len(code)-strings.LastIndex(code, x2) == 2
-	Body.isFormat = isFormat
-	if isFormat {
-		var firstTempIndex = len(x1)
-		var lastTempIndex = (len(code) - 2)
-		var newCode = code[firstTempIndex:lastTempIndex]
-		// T:WPA;S:FAST_TEST;P:6666
-		var newCodeArr = strings.Split(newCode, ";")
-		Body.Type = newCodeArr[0][2:]
-		Body.SID = newCodeArr[1][2:]
-		Body.PWD = newCodeArr[2][2:]
-	} else {
-		fmt.Println("未知错误")
-	}
-	return Body
-}
-
 func main() {
-	var args = os.Args
-
-	if len(args) >= 2 {
-		var body = decodeWifi(args[1])
-		if (body.isFormat) {
-			fmt.Println("wifi加密类型: ", body.Type)
-			fmt.Println("wifi名称: ", body.SID)
-			fmt.Println("wifi密码: ", body.PWD)
+	log.Println("正在查找手机")
+	lists := getDevices()
+	if len(lists) >= 1 {
+		current := lists[0]
+		log.Println("目前找到", len(lists), "台设备")
+		log.Println("===================")
+		log.Println("该设备型号: ", current.model)
+		log.Println("自动连接该设备...")
+		log.Println("开启屏幕中...")
+		turnOnScreen()
+		isUnlocked := checkUnlocked()
+		if isUnlocked {
+			log.Println("该手机已锁定,请先解锁手机")
+			ticker := time.NewTicker(1 * time.Second)
+			i := 0
+			for range ticker.C {
+				testUnlock := checkUnlocked()
+				if !testUnlock {
+					log.Println("解锁手机成功, 用时", i, "秒")
+					ticker.Stop()
+					break
+				}
+				i++
+			}
 		} else {
-			fmt.Println("参数错误")
+			log.Println("手机已解锁")
 		}
-	} else {
-		fmt.Println("参数错误")
+		log.Println("自动打开Wifi设置")
+		isLight := screenIsLight()
+		if !isLight {
+			turnOnScreen()
+		}
+		openWifiSetting()
+		log.Println("将需要解密的wifi打开分享弹窗")
+		fmt.Print("我已打开分享弹窗[Y/N]: ")
+		var isShareModal string
+		fmt.Scan(&isShareModal)
+		toUpperShareModal := strings.ToUpper(isShareModal)
+		if toUpperShareModal == "Y" {
+			log.Println("输入正确")
+			tempPath := pullImage()
+			log.Println("正在截图, 临时文件: ", tempPath)
+			body, err := qrcodeToWifiBody(tempPath)
+			if err != nil {
+				log.Println(err)
+			} else {
+				log.Println("Wifi名称: ", body.SID)
+				log.Println("Wifi密码: ", body.PWD)
+			}
+		}
+		log.Println("===================")
 	}
-
 }
