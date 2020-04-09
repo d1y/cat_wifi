@@ -89,8 +89,7 @@ func checkUnlocked() bool {
 
 // 测试是否 `root`
 func testRoot() bool {
-	outRoot := exec.Command("adb", "root")
-	resp, err := outRoot.Output()
+	resp, err := runADB("root")
 	if err != nil {
 		return false
 	}
@@ -104,8 +103,7 @@ func testRoot() bool {
 // 获取设备
 func getDevices() []devicesBody {
 	var body []devicesBody
-	outDevices := exec.Command("adb", "devices", "-l")
-	resp, err := outDevices.Output()
+	resp, err := runADB("devices -l")
 	if err != nil {
 		// unknownThrowMsg
 		return body
@@ -122,4 +120,22 @@ func getDevices() []devicesBody {
 	body = arr
 	// getDevicesSucessMsg
 	return body
+}
+
+// 查看某个文件
+func cat(path string) (string, error) {
+	str := fmt.Sprintf("shell %s %s", catBin, path)
+	resp, err := runADB(str)
+	return resp, err
+}
+
+// TODO 解码拿到的文字
+// 查看wifi密码
+func catWifiPassword() string {
+	constWifiPassword := "/data/misc/wifi/*.conf"
+	resp, err := cat(constWifiPassword)
+	if err != nil {
+		return ""
+	}
+	return resp
 }

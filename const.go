@@ -4,6 +4,7 @@ const (
 	tempPath = "/data/local/tmp"
 	screencapBin = "/system/bin/screencap"
 	rmBin = "/system/bin/rm"
+	catBin = "/system/bin/cat"
 )
 
 const (

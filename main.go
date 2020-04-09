@@ -52,13 +52,9 @@ func main() {
 			log.Println("输入正确")
 			tempPath := pullImage()
 			log.Println("正在截图, 临时文件: ", tempPath)
-			body, err := qrcodeToWifiBody(tempPath)
-			if err != nil {
-				log.Println(err)
-			} else {
-				log.Println("Wifi名称: ", body.SID)
-				log.Println("Wifi密码: ", body.PWD)
-			}
+			body := qrcodeToWifiBody(tempPath)
+			log.Println("Wifi名称: ", body.SID)
+			log.Println("Wifi密码: ", body.PWD)
 		}
 		log.Println("===================")
 	}
