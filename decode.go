@@ -61,6 +61,7 @@ type wifiBody struct {
 	PWD      string // 密码
 }
 
+// 格式化 wifi
 func decodeWifi(code string) wifiBody {
 	var Body wifiBody
 	var x1 = "WIFI:"
@@ -80,4 +81,33 @@ func decodeWifi(code string) wifiBody {
 		fmt.Println("未知错误")
 	}
 	return Body
+}
+
+// 格式化 `.conf` 文件
+func decodeRootWifiPassword(code string) string {
+	var str string
+	if len(code) == 0 {
+		str = catWifiPassword()
+	} else {
+		str = code
+	}
+	arr := strings.Split(str, "\n")
+	var networkArr []string
+	var keyword string = "network={"
+	var index int
+	index = -1
+	for idx, item := range arr {
+		item = strings.TrimSpace(item)
+		if item == keyword {
+			index = idx
+		} else {
+			if item == "}" {
+				// TODO
+				index = -1
+			} else {
+				index = -1
+			}
+		}
+	}
+	return str
 }

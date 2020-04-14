@@ -10,6 +10,11 @@ import (
 )
 
 func main() {
+	if !adbIsInstall {
+		log.Fatal("未安装`adb`, 请先安装`adb`")
+		return
+	}
+	return
 	log.Println("正在查找手机")
 	lists := getDevices()
 	if len(lists) >= 1 {
@@ -52,7 +57,11 @@ func main() {
 			log.Println("输入正确")
 			tempPath := pullImage()
 			log.Println("正在截图, 临时文件: ", tempPath)
-			body := qrcodeToWifiBody(tempPath)
+			body, err := qrcodeToWifiBody(tempPath)
+			if err != nil {
+				log.Fatal(err)
+				return
+			}
 			log.Println("Wifi名称: ", body.SID)
 			log.Println("Wifi密码: ", body.PWD)
 		}

