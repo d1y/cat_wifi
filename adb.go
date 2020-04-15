@@ -139,7 +139,3 @@ func catWifiPassword() string {
 	}
 	return resp
 }
-
-func init() {
-	decodeRootWifiPassword("")
-}

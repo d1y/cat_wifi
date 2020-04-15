@@ -63,4 +63,4 @@ cat /data/misc/wifi/*.conf
 ## TODO
 
 - [ ] 考虑多台设备连接下, 设备选择
-- [ ] 设备已 `root` 下, 直接获取所有 `wifi` 密码
+- [x] 设备已 `root` 下, 直接获取所有 `wifi` 密码

@@ -14,7 +14,6 @@ func main() {
 		log.Fatal("未安装`adb`, 请先安装`adb`")
 		return
 	}
-	return
 	log.Println("正在查找手机")
 	lists := getDevices()
 	if len(lists) >= 1 {
@@ -23,6 +22,15 @@ func main() {
 		log.Println("===================")
 		log.Println("该设备型号: ", current.model)
 		log.Println("自动连接该设备...")
+		if testRoot() {
+			log.Println("该设备已root, 自动获取wifi配置文件")
+			wifis := decodeRootWifiPassword("")
+			log.Println("设备共", len(wifis), "个保存的wifi")
+			for _, item := range wifis {
+				log.Println("名称: ", item.SID, "密码: ", item.PWD)
+			}
+			return
+		}
 		log.Println("开启屏幕中...")
 		turnOnScreen()
 		isUnlocked := checkUnlocked()
